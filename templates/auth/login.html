@@ -54,19 +54,16 @@
       <p class="text-muted small text-center mb-2">
         <i class="bi bi-key"></i> Credenciales de prueba
       </p>
-      <div class="d-grid gap-2">
-        <button type="button" class="btn btn-outline-secondary btn-sm text-start"
-                onclick="fillCredentials('admin', 'admin123')">
-          <i class="bi bi-shield-check text-warning"></i>
-          <strong>admin</strong> / admin123
-          <span class="badge bg-warning text-dark float-end">Administrador</span>
-        </button>
-        <button type="button" class="btn btn-outline-secondary btn-sm text-start"
-                onclick="fillCredentials('playero1', 'playero123')">
-          <i class="bi bi-fuel-pump text-info"></i>
-          <strong>playero1</strong> / playero123
-          <span class="badge bg-info text-dark float-end">Operador</span>
-        </button>
+      <div class="bg-light rounded p-2">
+        <div class="d-flex justify-content-between align-items-center py-1">
+          <span class="small"><i class="bi bi-person-fill text-warning"></i> <code>admin</code> / <code>admin123</code></span>
+          <span class="badge bg-warning text-dark">Administrador</span>
+        </div>
+        <hr class="my-1">
+        <div class="d-flex justify-content-between align-items-center py-1">
+          <span class="small"><i class="bi bi-person-fill text-info"></i> <code>playero1</code> / <code>playero123</code></span>
+          <span class="badge bg-info text-dark">Operador</span>
+        </div>
       </div>
     </div>
   </div>
@@ -75,12 +72,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  function fillCredentials(usuario, password) {
-    document.getElementById('usuario').value = usuario;
-    document.getElementById('password').value = password;
-    document.getElementById('usuario').closest('form').submit();
-  }
-</script>
 </body>
 </html>
