@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Historial de Ventas — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h5 class="fw-bold mb-0">
+    <i class="bi bi-cart-check text-success"></i> Historial de Ventas
+  </h5>
+  <a href="{{ url_for('ventas.nueva') }}" class="btn btn-success btn-sm">
+    <i class="bi bi-plus-circle"></i> Nueva Venta
+  </a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    {% if not ventas %}
+      <p class="text-muted p-3 mb-0">No hay ventas registradas.</p>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Comprobante</th>
+              <th>Cliente</th>
+              <th>Placa</th>
+              <th>Tanque</th>
+              <th>Tipo</th>
+              <th>Litros</th>
+              <th>Operador</th>
+              <th>Fecha y Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in ventas %}
+            <tr>
+              <td>
+                <a href="{{ url_for('ventas.comprobante', venta_id=v.id) }}"
+                   class="text-decoration-none">
+                  <code>{{ v.comprobante }}</code>
+                </a>
+              </td>
+              <td class="fw-semibold">{{ v.cliente.nombre_razon_social | truncate(25) }}</td>
+              <td><span class="badge bg-light text-dark border">{{ v.cliente.placa }}</span></td>
+              <td>{{ v.tanque.identificador }}</td>
+              <td>
+                <span class="badge bg-{{ 'warning text-dark' if v.tanque.tipo_carburante == 'Gasolina' else 'secondary' }}">
+                  {{ v.tanque.tipo_carburante }}
+                </span>
+              </td>
+              <td class="fw-bold text-success">{{ v.litros | round(2) }} L</td>
+              <td class="text-muted small">{{ v.operador.nombre }}</td>
+              <td class="text-muted small">{{ v.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

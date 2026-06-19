@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}JWLR Petrol{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+{% if session.operador_id %}
+<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm sticky-top">
+  <div class="container-fluid px-3">
+
+    <a class="navbar-brand fw-bold" href="{{ url_for('dashboard.index') }}">
+      &#9981; JWLR Petrol
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto gap-1">
+
+        <li class="nav-item">
+          <a class="nav-link rounded
+             {% if request.endpoint == 'dashboard.index' %}active bg-white bg-opacity-10{% endif %}"
+             href="{{ url_for('dashboard.index') }}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle rounded
+             {% if 'ventas' in (request.endpoint or '') %}active bg-white bg-opacity-10{% endif %}"
+             href="#" data-bs-toggle="dropdown" role="button">
+            <i class="bi bi-cart-check"></i> Ventas
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0">
+            <li>
+              <a class="dropdown-item" href="{{ url_for('ventas.nueva') }}">
+                <i class="bi bi-plus-circle text-success me-2"></i> Nueva Venta
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('ventas.lista') }}">
+                <i class="bi bi-list-ul text-secondary me-2"></i> Historial de Ventas
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle rounded
+             {% if 'ingresos' in (request.endpoint or '') %}active bg-white bg-opacity-10{% endif %}"
+             href="#" data-bs-toggle="dropdown" role="button">
+            <i class="bi bi-fuel-pump"></i> Ingresos
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0">
+            <li>
+              <a class="dropdown-item" href="{{ url_for('ingresos.nuevo') }}">
+                <i class="bi bi-plus-circle text-primary me-2"></i> Registrar Ingreso
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('ingresos.lista') }}">
+                <i class="bi bi-list-ul text-secondary me-2"></i> Historial de Ingresos
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link rounded
+             {% if 'clientes' in (request.endpoint or '') %}active bg-white bg-opacity-10{% endif %}"
+             href="{{ url_for('clientes.lista') }}">
+            <i class="bi bi-people"></i> Clientes
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <span class="text-light small">
+          <i class="bi bi-person-circle"></i>
+          {{ session.operador_nombre }}
+          <span class="badge bg-secondary ms-1">{{ session.operador_rol }}</span>
+        </span>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<div class="container-fluid px-4 py-3">
+
+  {# Flash messages #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show d-flex gap-2 align-items-start"
+               role="alert">
+            {%- if category == 'success' %}<i class="bi bi-check-circle-fill flex-shrink-0 mt-1"></i>
+            {%- elif category == 'danger' %}<i class="bi bi-x-circle-fill flex-shrink-0 mt-1"></i>
+            {%- elif category == 'warning' %}<i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+            {%- else %}<i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+            {%- endif %}
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

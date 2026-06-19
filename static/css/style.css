@@ -1,0 +1,33 @@
+body {
+  font-size: 0.93rem;
+}
+
+.navbar-brand {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.progress {
+  border-radius: 6px;
+}
+
+.progress-bar {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+  font-size: 0.95rem;
+}
+
+/* Comprobante: ocultar navbar y botones al imprimir */
+@media print {
+  nav, .d-flex.gap-2.mt-3 { display: none !important; }
+  body { background: white !important; }
+  #comprobante-card { box-shadow: none !important; border: 1px solid #ccc; }
+}

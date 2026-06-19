@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Nueva Venta — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-search"></i> Nueva Venta — Identificar Cliente
+      </div>
+      <div class="card-body">
+        <p class="text-muted small mb-3">
+          Ingrese la placa del vehículo o la cédula/NIT del cliente.
+          Si no está registrado, se le pedirá crear el registro.
+        </p>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Placa o Cédula / NIT</label>
+            <input type="text" name="busqueda" class="form-control form-control-lg"
+                   placeholder="Ej: 1234-ABC  ó  7654321"
+                   autofocus required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Tipo de Carburante</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       name="tipo_carburante" value="Gasolina"
+                       id="rGasolina" checked>
+                <label class="form-check-label" for="rGasolina">
+                  <span class="badge bg-warning text-dark fs-6">Gasolina</span>
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       name="tipo_carburante" value="Diesel"
+                       id="rDiesel">
+                <label class="form-check-label" for="rDiesel">
+                  <span class="badge bg-secondary fs-6">Diesel</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success w-100">
+            <i class="bi bi-search"></i> Buscar Cliente
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

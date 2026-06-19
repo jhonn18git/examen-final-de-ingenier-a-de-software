@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}Procesar Venta — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+
+    <!-- Info del cliente -->
+    <div class="card shadow-sm mb-3
+      {% if cliente.estado == 'Suspendido' %}border-danger{% endif %}">
+      <div class="card-header fw-semibold
+        {% if cliente.estado == 'Suspendido' %}bg-danger text-white
+        {% else %}bg-white{% endif %}">
+        <i class="bi bi-person-circle"></i> Datos del Cliente
+      </div>
+      <div class="card-body py-2">
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <small class="text-muted">Nombre</small>
+            <p class="mb-0 fw-semibold">{{ cliente.nombre_razon_social }}</p>
+          </div>
+          <div class="col-sm-3">
+            <small class="text-muted">Cédula / NIT</small>
+            <p class="mb-0">{{ cliente.cedula_nit }}</p>
+          </div>
+          <div class="col-sm-3">
+            <small class="text-muted">Placa</small>
+            <p class="mb-0 fw-semibold">{{ cliente.placa }}</p>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted">Tipo</small>
+            <p class="mb-0">{{ cliente.tipo_cliente }}</p>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted">Estado</small>
+            <p class="mb-0">
+              {% if cliente.estado == 'Activo' %}
+                <span class="badge bg-success fs-6">Habilitado</span>
+              {% else %}
+                <span class="badge bg-danger fs-6">Suspendido</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if cliente.estado == 'Suspendido' %}
+    <div class="alert alert-danger fw-semibold">
+      <i class="bi bi-slash-circle"></i>
+      Este cliente está suspendido. No se pueden procesar ventas.
+      <div class="mt-2">
+        <a href="{{ url_for('ventas.nueva') }}" class="btn btn-outline-danger btn-sm">
+          Volver
+        </a>
+      </div>
+    </div>
+
+    {% else %}
+
+    <!-- Cupo calculado -->
+    <div class="card shadow-sm mb-3
+      {% if es_nuevo %}border-info{% else %}border-success{% endif %}">
+      <div class="card-body py-2">
+        <div class="row text-center g-0">
+          <div class="col-4 border-end">
+            <small class="text-muted d-block">Promedio Semanal (Ps)</small>
+            <span class="fs-5 fw-bold">{{ ps }} L</span>
+          </div>
+          <div class="col-4 border-end">
+            <small class="text-muted d-block">Factor Holgura</small>
+            <span class="fs-5 fw-bold">{{ (empresa.factor_holgura * 100) | round(0) | int }}%</span>
+          </div>
+          <div class="col-4">
+            <small class="text-muted d-block">Límite permitido</small>
+            <span class="fs-5 fw-bold text-success" id="span-limite">{{ limite }} L</span>
+          </div>
+        </div>
+        {% if es_nuevo %}
+        <div class="text-center mt-2">
+          <span class="badge bg-info text-dark">
+            <i class="bi bi-info-circle"></i>
+            Cliente nuevo — usando cupo base de {{ empresa.cupo_base_inicial }} L
+          </span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Alerta si excede límite -->
+    <div id="alerta-excede" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <strong>Cantidad supera el límite permitido.</strong>
+      El sistema solo puede procesar hasta <strong id="txt-limite">{{ limite }}</strong> L.
+      Haga clic en <em>"Ajustar al límite"</em> para continuar.
+    </div>
+
+    <!-- Formulario de venta -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-cart-check"></i> Despacho de
+        <span class="badge bg-{{ 'warning text-dark' if tipo == 'Gasolina' else 'light text-dark' }} ms-1">
+          {{ tipo }}
+        </span>
+      </div>
+      <div class="card-body">
+        {% if not tanques %}
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            No hay tanques de <strong>{{ tipo }}</strong> disponibles.
+          </div>
+        {% else %}
+        <form method="POST" id="form-venta">
+          <input type="hidden" name="tipo_carburante" value="{{ tipo }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tanque</label>
+            <select name="id_tanque" id="id_tanque" class="form-select" required>
+              <option value="">-- Seleccione tanque --</option>
+              {% for t in tanques %}
+              <option value="{{ t.id }}" data-stock="{{ t.stock_actual }}">
+                {{ t.identificador }} — {{ t.tipo_carburante }}
+                (Stock: {{ t.stock_actual | round(1) }} L)
+              </option>
+              {% endfor %}
+            </select>
+            <div class="form-text">
+              Stock disponible: <strong id="stock-disponible">—</strong>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Litros Solicitados</label>
+            <div class="input-group input-group-lg">
+              <input type="number" name="litros" id="litros"
+                     class="form-control" placeholder="0.00"
+                     min="0.1" step="0.1" required autofocus>
+              <span class="input-group-text">L</span>
+            </div>
+            <div class="form-text">
+              Límite habilitado: <strong class="text-success">{{ limite }} L</strong>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" id="btn-procesar" class="btn btn-success" disabled>
+              <i class="bi bi-check-circle"></i> Procesar Venta
+            </button>
+            <button type="button" id="btn-ajustar" class="btn btn-warning d-none">
+              <i class="bi bi-arrow-down-circle"></i>
+              Ajustar al límite ({{ limite }} L)
+            </button>
+            <a href="{{ url_for('ventas.nueva') }}" class="btn btn-outline-secondary">
+              Cancelar
+            </a>
+          </div>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const LIMITE = {{ limite }};
+  const inputLitros = document.getElementById('litros');
+  const btnProcesar = document.getElementById('btn-procesar');
+  const btnAjustar = document.getElementById('btn-ajustar');
+  const alertaExcede = document.getElementById('alerta-excede');
+  const selectTanque = document.getElementById('id_tanque');
+  const stockDisplay = document.getElementById('stock-disponible');
+
+  if (selectTanque) {
+    selectTanque.addEventListener('change', function () {
+      const opt = this.options[this.selectedIndex];
+      const stock = parseFloat(opt.dataset.stock);
+      stockDisplay.textContent = isNaN(stock) ? '—' : stock.toFixed(1) + ' L';
+      validar();
+    });
+  }
+
+  function validar() {
+    if (!inputLitros) return;
+    const cantidad = parseFloat(inputLitros.value) || 0;
+
+    if (cantidad <= 0) {
+      btnProcesar.disabled = true;
+      btnAjustar.classList.add('d-none');
+      alertaExcede.classList.add('d-none');
+      return;
+    }
+
+    if (cantidad > LIMITE) {
+      btnProcesar.disabled = true;
+      btnAjustar.classList.remove('d-none');
+      alertaExcede.classList.remove('d-none');
+    } else {
+      btnProcesar.disabled = false;
+      btnAjustar.classList.add('d-none');
+      alertaExcede.classList.add('d-none');
+    }
+  }
+
+  if (inputLitros) {
+    inputLitros.addEventListener('input', validar);
+  }
+
+  if (btnAjustar) {
+    btnAjustar.addEventListener('click', function () {
+      inputLitros.value = LIMITE.toFixed(2);
+      validar();
+    });
+  }
+</script>
+{% endblock %}

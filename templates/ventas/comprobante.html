@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Comprobante {{ venta.comprobante }} — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+
+    <div class="alert alert-success d-flex gap-2 align-items-center">
+      <i class="bi bi-check-circle-fill fs-4"></i>
+      <div>
+        <strong>Venta procesada correctamente.</strong>
+        Se ha descontado el stock del tanque correspondiente.
+      </div>
+    </div>
+
+    <!-- Comprobante imprimible -->
+    <div class="card shadow-sm" id="comprobante-card">
+      <div class="card-header bg-dark text-white text-center py-3">
+        <h5 class="mb-0 fw-bold">&#9981; JWLR Petrol</h5>
+        <small>Comprobante de Venta de Carburante</small>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <span class="badge bg-dark fs-6 py-2 px-3">
+            <i class="bi bi-upc-scan"></i> {{ venta.comprobante }}
+          </span>
+        </div>
+
+        <table class="table table-borderless table-sm mb-0">
+          <tbody>
+            <tr>
+              <th class="text-muted" style="width:40%">Fecha y Hora</th>
+              <td>{{ venta.fecha_hora.strftime('%d/%m/%Y  %H:%M') }}</td>
+            </tr>
+            <tr>
+              <th class="text-muted">Operador</th>
+              <td>{{ venta.operador.nombre }}</td>
+            </tr>
+            <tr><td colspan="2"><hr class="my-1"></td></tr>
+            <tr>
+              <th class="text-muted">Cliente</th>
+              <td class="fw-semibold">{{ venta.cliente.nombre_razon_social }}</td>
+            </tr>
+            <tr>
+              <th class="text-muted">Cédula / NIT</th>
+              <td>{{ venta.cliente.cedula_nit }}</td>
+            </tr>
+            <tr>
+              <th class="text-muted">Placa</th>
+              <td class="fw-semibold">{{ venta.cliente.placa }}</td>
+            </tr>
+            <tr>
+              <th class="text-muted">Tipo cliente</th>
+              <td>{{ venta.cliente.tipo_cliente }}</td>
+            </tr>
+            <tr><td colspan="2"><hr class="my-1"></td></tr>
+            <tr>
+              <th class="text-muted">Tanque</th>
+              <td>{{ venta.tanque.identificador }}</td>
+            </tr>
+            <tr>
+              <th class="text-muted">Carburante</th>
+              <td>
+                <span class="badge bg-{{ 'warning text-dark' if venta.tanque.tipo_carburante == 'Gasolina' else 'secondary' }}">
+                  {{ venta.tanque.tipo_carburante }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th class="text-muted">Cantidad</th>
+              <td class="fw-bold fs-5 text-success">{{ venta.litros | round(2) }} L</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer text-center text-muted small py-2">
+        Stock actual del tanque {{ venta.tanque.identificador }}:
+        <strong>{{ venta.tanque.stock_actual | round(1) }} L</strong>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-3 justify-content-center flex-wrap">
+      <a href="{{ url_for('ventas.nueva') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nueva Venta
+      </a>
+      <button onclick="window.print()" class="btn btn-outline-secondary">
+        <i class="bi bi-printer"></i> Imprimir
+      </button>
+      <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-dark">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

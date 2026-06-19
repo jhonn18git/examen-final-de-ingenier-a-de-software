@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-speedometer2 text-warning"></i> Dashboard
+  </h4>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('ventas.nueva') }}" class="btn btn-success btn-sm">
+      <i class="bi bi-cart-plus"></i> Nueva Venta
+    </a>
+    <a href="{{ url_for('ingresos.nuevo') }}" class="btn btn-primary btn-sm">
+      <i class="bi bi-fuel-pump"></i> Registrar Ingreso
+    </a>
+  </div>
+</div>
+
+{% if tanques_alerta %}
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+  <div>
+    <strong>Alerta de stock mínimo:</strong>
+    {% for t in tanques_alerta %}
+      <span class="badge bg-danger ms-1">
+        {{ t.identificador }} ({{ t.stock_actual | round(1) }} L)
+      </span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+
+  <!-- Tanques -->
+  <div class="col-md-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-archive text-primary"></i> Estado de Tanques
+      </div>
+      <div class="card-body">
+        {% if not tanques %}
+          <p class="text-muted">No hay tanques registrados.</p>
+        {% endif %}
+        {% for t in tanques %}
+          {% set pct = (t.stock_actual / t.capacidad_maxima * 100) | round(1) %}
+          {% if t.stock_actual <= t.stock_minimo %}
+            {% set color = "danger" %}
+          {% elif pct < 30 %}
+            {% set color = "warning" %}
+          {% else %}
+            {% set color = "success" %}
+          {% endif %}
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-semibold">
+                {{ t.identificador }}
+                <span class="badge bg-{{ 'warning text-dark' if t.tipo_carburante == 'Gasolina' else 'secondary' }} ms-1">
+                  {{ t.tipo_carburante }}
+                </span>
+                {% if t.stock_actual <= t.stock_minimo %}
+                  <span class="badge bg-danger ms-1">
+                    <i class="bi bi-exclamation-triangle"></i> Stock mínimo
+                  </span>
+                {% endif %}
+              </span>
+              <span class="text-muted small">
+                {{ t.stock_actual | round(1) }} L / {{ t.capacidad_maxima | round(0) | int }} L
+              </span>
+            </div>
+            <div class="progress" style="height:22px;">
+              <div class="progress-bar bg-{{ color }}" style="width:{{ pct }}%;">
+                {{ pct }}%
+              </div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+              <small class="text-muted">Mín: {{ t.stock_minimo | round(0) | int }} L</small>
+              <small class="text-muted">Cap: {{ t.capacidad_maxima | round(0) | int }} L</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimas ventas -->
+  <div class="col-md-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-clock-history text-success"></i> Últimas Ventas</span>
+        <a href="{{ url_for('ventas.lista') }}" class="small text-decoration-none">Ver todas</a>
+      </div>
+      <div class="card-body p-0">
+        {% if not ultimas_ventas %}
+          <p class="text-muted p-3 mb-0">Sin ventas registradas.</p>
+        {% else %}
+          <ul class="list-group list-group-flush">
+            {% for v in ultimas_ventas %}
+            <li class="list-group-item py-2">
+              <div class="d-flex justify-content-between">
+                <span class="fw-semibold small">{{ v.cliente.nombre_razon_social | truncate(22) }}</span>
+                <span class="badge bg-success">{{ v.litros }} L</span>
+              </div>
+              <div class="d-flex justify-content-between mt-1">
+                <small class="text-muted">{{ v.tanque.identificador }} · {{ v.tanque.tipo_carburante }}</small>
+                <small class="text-muted">{{ v.fecha_hora.strftime('%d/%m %H:%M') }}</small>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

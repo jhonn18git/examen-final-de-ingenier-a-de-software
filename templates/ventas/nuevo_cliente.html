@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Registrar Cliente — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="alert alert-info d-flex gap-2 align-items-center">
+      <i class="bi bi-info-circle-fill fs-5"></i>
+      <div>
+        <strong>Cliente no encontrado.</strong>
+        Complete los datos para registrarlo y continuar con la venta.
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark fw-semibold">
+        <i class="bi bi-person-plus"></i> Registro Rápido de Cliente
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <input type="hidden" name="tipo_carburante" value="{{ tipo }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Cédula de Identidad / NIT</label>
+            <input type="text" name="cedula_nit" class="form-control"
+                   placeholder="Número de documento" required autofocus>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre completo / Razón Social</label>
+            <input type="text" name="nombre_razon_social" class="form-control"
+                   placeholder="Nombre del cliente o empresa" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Placa del Vehículo</label>
+            <input type="text" name="placa" class="form-control text-uppercase"
+                   placeholder="Ej: 1234-ABC"
+                   value="{{ busqueda if '-' in busqueda or busqueda | length <= 8 else '' }}"
+                   required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Tipo de Cliente</label>
+            <select name="tipo_cliente" class="form-select">
+              <option value="Particular">Particular</option>
+              <option value="Transporte Publico">Transporte Público</option>
+              <option value="Empresa">Empresa</option>
+            </select>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+              <i class="bi bi-check-lg"></i> Registrar y continuar
+            </button>
+            <a href="{{ url_for('ventas.nueva') }}" class="btn btn-outline-secondary">
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

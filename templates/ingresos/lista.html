@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Historial de Ingresos — JWLR Petrol{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h5 class="fw-bold mb-0">
+    <i class="bi bi-fuel-pump text-primary"></i> Historial de Ingresos
+  </h5>
+  <a href="{{ url_for('ingresos.nuevo') }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-circle"></i> Nuevo Ingreso
+  </a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    {% if not ingresos %}
+      <p class="text-muted p-3 mb-0">No hay ingresos registrados.</p>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Tanque</th>
+              <th>Tipo</th>
+              <th>Litros</th>
+              <th>N° Factura/Remisión</th>
+              <th>Fecha y Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in ingresos %}
+            <tr>
+              <td class="text-muted small">{{ i.id }}</td>
+              <td><span class="fw-semibold">{{ i.tanque.identificador }}</span></td>
+              <td>
+                <span class="badge bg-{{ 'warning text-dark' if i.tanque.tipo_carburante == 'Gasolina' else 'secondary' }}">
+                  {{ i.tanque.tipo_carburante }}
+                </span>
+              </td>
+              <td class="fw-semibold text-success">{{ i.litros | round(1) }} L</td>
+              <td><code>{{ i.nro_factura_remision }}</code></td>
+              <td class="text-muted small">{{ i.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
