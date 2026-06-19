@@ -8,7 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 <body class="bg-dark d-flex align-items-center" style="min-height:100vh;">
-<div class="container" style="max-width:400px;">
+<div class="container" style="max-width:420px;">
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
@@ -26,30 +26,61 @@
         <h4 class="fw-bold mt-1">JWLR Petrol</h4>
         <p class="text-muted small">Sistema de Venta Controlada de Carburantes</p>
       </div>
+
       <form method="POST">
         <div class="mb-3">
           <label class="form-label fw-semibold">Usuario</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" name="usuario" class="form-control" placeholder="usuario"
-                   required autofocus>
+            <input type="text" name="usuario" id="usuario" class="form-control"
+                   placeholder="usuario" required autofocus>
           </div>
         </div>
         <div class="mb-4">
           <label class="form-label fw-semibold">Contraseña</label>
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            <input type="password" name="password" id="password" class="form-control"
+                   placeholder="••••••••" required>
           </div>
         </div>
         <button type="submit" class="btn btn-dark w-100">
           <i class="bi bi-box-arrow-in-right"></i> Ingresar
         </button>
       </form>
+
+      <!-- Credenciales de prueba -->
+      <hr class="my-3">
+      <p class="text-muted small text-center mb-2">
+        <i class="bi bi-key"></i> Credenciales de prueba
+      </p>
+      <div class="d-grid gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm text-start"
+                onclick="fillCredentials('admin', 'admin123')">
+          <i class="bi bi-shield-check text-warning"></i>
+          <strong>admin</strong> / admin123
+          <span class="badge bg-warning text-dark float-end">Administrador</span>
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm text-start"
+                onclick="fillCredentials('playero1', 'playero123')">
+          <i class="bi bi-fuel-pump text-info"></i>
+          <strong>playero1</strong> / playero123
+          <span class="badge bg-info text-dark float-end">Operador</span>
+        </button>
+      </div>
     </div>
   </div>
+
   <p class="text-center text-muted mt-3 small">Sucre, Bolivia</p>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function fillCredentials(usuario, password) {
+    document.getElementById('usuario').value = usuario;
+    document.getElementById('password').value = password;
+    document.getElementById('usuario').closest('form').submit();
+  }
+</script>
 </body>
 </html>
